@@ -1,15 +1,13 @@
 {
-  "name": "proc-web",
-  "version": "0.0.1",
-  "description": "proc on the web",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "./"
-  },
-  "author": "Shaw Summa",
-  "license": "MIT"
+    "name": "pn.js",
+    "version": "0.0.1",
+    "description": "passerine js",
+    "main": "index.js",
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "./"
+    },
+    "author": "Shaw Summa",
+    "license": "MIT"
 }
