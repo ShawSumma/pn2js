@@ -1,5 +1,6 @@
 const token = require('./token.js');
 const node = require('./node.js');
+const op = require('./op.js');
 
 const isBreakToken = function(curToken) {
     return curToken[0] === token.number ||
@@ -54,7 +55,7 @@ const parseCall = function(stream) {
 
 const parseOpers = function(stream) {
     let depth = 0;
-    let args = [node.opers];
+    let args = [];
     let expr = []
     for (curToken of stream) {
         expr.push(curToken);
@@ -74,10 +75,10 @@ const parseOpers = function(stream) {
     if (expr.length !== 0) {
         args.push(parseCall(expr));
     }
-    if (args.length === 2) {
-        return args[1];
+    if (args.length === 1) {
+        return args[0];
     } else {
-        return args;
+        return op(args);
     }
 };
 

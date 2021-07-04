@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.dump": "plaintext",
+        "*.mak": "makefile",
+        "*.make": "makefile",
+        ".run": "fish",
+        "stdlib.h": "c",
+        "string.h": "c"
+    }
+}

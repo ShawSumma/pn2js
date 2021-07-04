@@ -1,6 +1,8 @@
 module.exports = {
     block: Symbol("block"),
-    stmt: Symbol("stmt"),
     call: Symbol("call"),
-    opers: Symbol("opers"),
+    oper: Symbol("oper"),
+    local: Symbol("local"),
+    nonlocal: Symbol("nonlocal"),
+    value: Symbol("value"),
 };

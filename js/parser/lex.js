@@ -128,9 +128,9 @@ module.exports = function(src) {
     }
     if (state === states.ident) {
         tokens.push([types.ident, token]);
-    } else if (state == states.number) {
+    } else if (state === states.number) {
         tokens.push([types.number, token]);
-    } else if (state == states.operator) {
+    } else if (state === states.operator) {
         tokens.push([types.operator, token]);
     }
     return tokens;
