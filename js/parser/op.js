@@ -26,11 +26,19 @@ const opLevel = function(level, stream) {
     if (arg.length !== 0) {
         args.push(opLevel(level + 1, arg));
     }
-    let ret = args[0];
-    for (let i = 1; i < args.length; i += 2) {
-        ret = [node.oper, args[i], ret, args[i + 1]];
+    if (prec[level].includes('->')) {
+        let ret = args[args.length - 1];
+        for (let i = args.length - 3; i >= 0; i -= 2) {
+            ret = [node.oper, args[i + 1], args[i], ret];
+        }
+        return ret;
+    } else {
+        let ret = args[0];
+        for (let i = 1; i < args.length; i += 2) {
+            ret = [node.oper, args[i], ret, args[i + 1]];
+        }
+        return ret;
     }
-    return ret;
 };
 
 module.exports = function(stream) {

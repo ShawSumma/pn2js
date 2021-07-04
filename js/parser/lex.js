@@ -1,10 +1,15 @@
 const types = require("./token.js");
 
+let ops = "+-*/%=><:";
+
+let keywords = require('./keyword.js');
+
 const states = {
     ready: Symbol("ready"),
     ident: Symbol("ident"),
     number: Symbol("number"),
-    operator: Symbol("operator")
+    operator: Symbol("operator"),
+    string: Symbol("string"),
 };
 
 module.exports = function(src) {
@@ -27,39 +32,68 @@ module.exports = function(src) {
             } else if ('0' <= char && char <= '9') {
                 token = char;
                 state = states.number;
-            } else if ('a' <= char && char <= 'z') {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
                 token = char;
                 state = states.ident;
-            } else if ('+-*/%'.includes(char)) {
+            } else if (char === '"') {
+                token = '';
+                state = states.string;
+            } else if (ops.includes(char)) {
                 token = char;
                 state = states.operator;
-            } else {
-                throw new Error("invalid char in token");
-            }
+            } else {}
         } else if (state === states.ident) {
             if ('\t '.includes(char)) {
-                tokens.push([types.ident, token]);
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
                 state = states.ready;
             } else if ('\n\r'.includes(char)) {
-                tokens.push([types.ident, token]);
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
                 tokens.push([types.newline]);
                 state = states.ready;
             } else if ('({['.includes(char)) {
-                tokens.push([types.ident, token]);
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
                 tokens.push([types.open, char]);
                 state = states.ready;
             } else if (')}]'.includes(char)) {
-                tokens.push([types.ident, token]);
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
                 tokens.push([types.close, char]);
                 state = states.ready;
             } else if ('0' <= char && char <= '9') {
                 token += char;
                 state = states.ident;
-            } else if ('a' <= char && char <= 'z') {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
                 token += char;
                 state = states.ident;
-            } else if ('+-/*%'.includes(char)) {
-                tokens.push([types.ident, token]);
+            } else if (char === '"') {
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
+                token = '';
+                state = states.string;
+            } else if (ops.includes(char)) {
+                if (keywords.includes(token)) {
+                    tokens.push([types.keyword, token]);
+                } else {
+                    tokens.push([types.ident, token]);
+                }
                 token = char;
                 state = states.operator;
             } else {
@@ -84,17 +118,20 @@ module.exports = function(src) {
             } else if ('0' <= char && char <= '9') {
                 token += char;
                 state = states.number;
-            } else if ('a' <= char && char <= 'z') {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
                 throw new Error("letter found in number");
-            } else if ('+-/*%'.includes(char)) {
+            } else if (char === '"') {
+                tokens.push([types.number, token]);
+                token = '';
+                state = states.string;
+            } else if (ops.includes(char)) {
                 tokens.push([types.number, token]);
                 token = char;
                 state = states.operator;
             } else {
                 throw new Error("letter found in number");
             }
-        } else
-        if (state === states.operator) {
+        } else if (state === states.operator) {
             if ('\t '.includes(char)) {
                 tokens.push([types.operator, token]);
                 state = states.ready;
@@ -114,15 +151,26 @@ module.exports = function(src) {
                 tokens.push([types.operator, token]);
                 token = char;
                 state = states.number;
-            } else if ('a' <= char && char <= 'z') {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
                 tokens.push([types.operator, token]);
                 token = char;
                 state = states.ident;
-            } else if ('+-/*%'.includes(char)) {
+            } else if (char === '"') {
+                tokens.push([types.operator, token]);
+                token = '';
+                state = states.string;
+            } else if (ops.includes(char)) {
                 token += char;
                 state = states.operator;
             } else {
-                throw new Error("letter found after operator");
+                throw new Error("bad char found after operator " + char);
+            }
+        } else if (state === states.string) {
+            if (char === '"') {
+                tokens.push([types.string, token]);
+                state = states.ready;
+            } else {
+                token += char;
             }
         }
     }
@@ -132,6 +180,8 @@ module.exports = function(src) {
         tokens.push([types.number, token]);
     } else if (state === states.operator) {
         tokens.push([types.operator, token]);
+    } else if (state === states.string) {
+        tokens.push([types.string, token]);
     }
     return tokens;
 };

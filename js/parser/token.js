@@ -1,6 +1,7 @@
 module.exports = {
-    number: Symbol("number"),
+    keyword: Symbol("keyword"),
     ident: Symbol("ident"),
+    number: Symbol("number"),
     operator: Symbol("operator"),
     newline: Symbol("newline"),
     open: Symbol("open"),

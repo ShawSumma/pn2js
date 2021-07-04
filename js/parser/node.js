@@ -1,8 +1,8 @@
 module.exports = {
     block: Symbol("block"),
     call: Symbol("call"),
+    array: Symbol("array"),
     oper: Symbol("oper"),
     local: Symbol("local"),
-    nonlocal: Symbol("nonlocal"),
     value: Symbol("value"),
 };

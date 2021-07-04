@@ -4,6 +4,8 @@ const op = require('./op.js');
 
 const isBreakToken = function(curToken) {
     return curToken[0] === token.number ||
+        curToken[0] === token.keyword ||
+        curToken[0] === token.string ||
         curToken[0] === token.ident ||
         curToken[0] === token.open ||
         curToken[0] === token.close;
@@ -38,7 +40,11 @@ const parseCall = function(stream) {
             if (depth === 0) {
                 arg.shift();
                 arg.pop();
-                args.push(parseOpers(arg))
+                if (curToken[1] === ')') {
+                    args.push(parseOpers(arg));
+                } else if (curToken[1] === '}') {
+                    args.push(parseLines(arg));
+                }
                 arg = [];
             }
         }
@@ -94,6 +100,7 @@ const parseLines = function(stream) {
             if (line.length !== 0) {
                 let node = parseOpers(line);
                 nodes.push(node);
+                line = [];
             }
         } else {
             line.push(curToken);
