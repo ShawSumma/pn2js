@@ -1,0 +1,78 @@
+types = require "./token.js"
+
+ops = "+-*/%=><:&|"
+
+keywords = require "./keyword.js"
+
+ready = src -> index -> {
+    char = src index
+    if (char == undefined) {
+        List "empty"
+    } elseif (" " == char) {
+        ready src (index + 1)
+    } elseif (newline == char) {
+        ready src (index + 1)
+    } elseif ("({[" "includes" char) {
+        ret = List of (types "open") char
+        token "prepend" ret (ready src index)
+    } elseif ("]})" "includes" char) {
+        ret = List of (types "close") char
+        token "prepend" ret (ready src index)
+    } elseif ("0" <= char && char <= "9") {
+        number src index ""
+    } elseif (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")) {
+        ident src index ""
+    } elseif (char == quote) {
+        string src index ""
+    } elseif (ops "includes" char) {
+        operator src index ""
+    } else {
+        error ("ready char failed " + char)
+    }
+}
+
+ident = src -> index -> token -> {
+    char = src index
+    if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")){
+        ident src (index + 1) (token + char)
+    } else {
+        ret = List of (types "ident") token
+        List "prepend" ret (ready src index)
+    }
+}
+
+number = src -> index -> token -> {
+    char = src index
+    if ("0" <= char && char <= "9"){
+        number src (index + 1) (token + char)
+    } else {
+        ret = List of (types "number") token
+        List "prepend" ret (ready src index)
+    }
+}
+
+operator = src -> index -> token -> {
+    char = src index
+    if (ops "includes" char){
+        operator src (index + 1) (token + char)
+    } else {
+        ret = List of (types "operator") token
+        println token
+        List "prepend" ret (ready src index)
+    }
+}
+
+string = src -> index -> token -> {
+    char = src index
+    if (char != quote) {
+        quote src (index + 1) (token + char)
+    } else {
+        ret = List of (types "string") token
+        List "prepend" ret (ready src index)
+    }
+}
+
+src -> {
+    ret = ready src 0
+    ret
+}

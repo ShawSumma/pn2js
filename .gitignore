@@ -1,3 +1,4 @@
 node_modules
-bin
-out.js
+stage1/*.js
+stage2/*.js
+stage2

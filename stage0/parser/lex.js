@@ -1,6 +1,6 @@
 const types = require("./token.js");
 
-let ops = "+-*/%=><:";
+let ops = "+-*/%=><:&|";
 
 let keywords = require('./keyword.js');
 
@@ -97,7 +97,7 @@ module.exports = function(src) {
                 token = char;
                 state = states.operator;
             } else {
-                throw new Error("invalid char in ident");
+                throw new Error("invalid char in ident " + char);
             }
         } else if (state === states.number) {
             if ('\t '.includes(char)) {
