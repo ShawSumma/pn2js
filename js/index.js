@@ -3,8 +3,7 @@ const util = require('util');
 
 const lex = require('./parser/lex.js');
 const parse = require('./parser/parse.js');
-const scope = require('./compiler/scope.js')
-const walk = require('./eval/walk.js');
+const cjs = require('./compiler/cjs.js');
 
 const main = function(args) {
     const filename = args[0];
@@ -14,12 +13,8 @@ const main = function(args) {
     const src = fs.readFileSync(filename).toString();
     const tokens = lex(src);
     const ast = parse(tokens);
-    scope(ast);
-    const res = util.inspect(ast, {
-        depth: null,
-    });
-    console.log(res);
-    walk(ast);
+    const js = cjs(ast);
+    fs.writeFileSync(filename.replace('.pn', '.js'), js);
 };
 
 main(process.argv.slice(2));
