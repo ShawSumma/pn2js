@@ -1,6 +1,6 @@
 const types = require("./token.js");
 
-let ops = "+-*/%=><:&|";
+let ops = "+-*/%=><:&|!";
 
 let keywords = require('./keyword.js');
 
@@ -32,7 +32,7 @@ module.exports = function(src) {
             } else if ('0' <= char && char <= '9') {
                 token = char;
                 state = states.number;
-            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || char === '_') {
                 token = char;
                 state = states.ident;
             } else if (char === '"') {
@@ -77,7 +77,7 @@ module.exports = function(src) {
             } else if ('0' <= char && char <= '9') {
                 token += char;
                 state = states.ident;
-            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || char === '_') {
                 token += char;
                 state = states.ident;
             } else if (char === '"') {
@@ -118,7 +118,7 @@ module.exports = function(src) {
             } else if ('0' <= char && char <= '9') {
                 token += char;
                 state = states.number;
-            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || char === '_') {
                 throw new Error("letter found in number");
             } else if (char === '"') {
                 tokens.push([types.number, token]);
@@ -151,7 +151,7 @@ module.exports = function(src) {
                 tokens.push([types.operator, token]);
                 token = char;
                 state = states.number;
-            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
+            } else if (('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || char === '_') {
                 tokens.push([types.operator, token]);
                 token = char;
                 state = states.ident;

@@ -10,7 +10,7 @@ const run = function(ast) {
         let ret = [];
         for (let i = 1; i < ast.length; i += 1) {
             let sub = ast[i];
-            if (sub[0] === node.oper && sub[1] === ':=') {
+            if (sub[0] === node.oper && sub[1] === '=') {
                 ret.push(`const ${run(sub[2])}=${run(sub[3])}`);
             } else {
                 ret.push(run(sub));
@@ -20,8 +20,8 @@ const run = function(ast) {
             return ret[0];
         };
         let last = ret.pop();
-        ret.push(`return ${last};`);
-        let body = ret.join(';');
+        ret.push(`return ${last};\n`);
+        let body = ret.join(';\n');
         return `(function(){${body}})()`;
     }
     if (ast[0] === node.call) {

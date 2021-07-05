@@ -1,21 +1,38 @@
 
 const println = console.log;
+const quote = '"';
+const newline = String.fromCharCode(10);
 
 const List = Object.freeze({
     cons: x => Object.freeze([...x]),
     empty: Object.freeze([]),
-    add: x => e => Object.freeze([...x, e]),
+    prepend: e => x => Object.freeze([e, ...x]),
+    append: x => e => Object.freeze([...x, e]),
     concat: x => y => Object.freeze([...x, ...y]),
 });
 
-const Dict = Object.freeze({
-    empty: Object.freeze({}),
-    add: x => k => v => Object.freeze({...x, [k]: y}),
-    concat: x => y => Object.freeze({...x, ...y}),
+const Enum = Object.freeze({
+    cons: x => {
+        let ret = {};
+        for (let i of x) {
+            ret[i] = Symbol(i);
+        }
+        return Object.freeze(ret);
+    },
 });
 
+const error = x => {
+    throw new Error(x);
+};
+
 const pn = {
-    op2add: (x, y) => x + y,
+    op2add: (x, y) => {
+        if (Array.isArray(x) && Array.isArray(y)) {
+            return [...x, ...y]
+        } else {
+            return x + y
+        }
+    },
     op2sub: (x, y) => x - y,
     op2mul: (x, y) => x * y,
     op2div: (x, y) => x / y,
@@ -29,11 +46,20 @@ const pn = {
         if (x instanceof Function) {
             return x(y);
         } else {
-            return x[y];
+            let ret = x[y];
+            if (ret instanceof Function) {
+                return ret.bind(x);
+            } else {
+                return ret;
+            }
         }
     },
     cons: (cls, args) => {
-        return cls.cons(args);
+        if (cls instanceof Function) {
+            return cls(...args);
+        } else {
+            return cls.cons(args);
+        }
     },
 };
-pn.op2call(println, 10)
+println

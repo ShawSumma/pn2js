@@ -11,7 +11,7 @@ const run = function(ast) {
         for (let i = 1; i < ast.length; i += 1) {
             let sub = ast[i];
             if (sub[0] === node.oper && sub[1] === '=') {
-                ret.push(`let ${run(sub[2])}=Symbol("err")`);
+                ret.push(`let ${run(sub[2])}=${run(sub[3])}`);
             } else {
                 ret.push(run(sub));
             }
@@ -73,19 +73,18 @@ const run = function(ast) {
                         throw new Error("compiler expected else or elseif");
                     }
                 }
-                let ret = '(';
-                for (let i = 0; i < conds.length; i += 1) {
-                    ret += conds[i];
-                    ret += '?';
-                    ret += iftrues[i];
-                    ret += ':';
-                }
-                ret += ifelse;
-                ret += ')';
-                return ret;
             }
-        }
-        if (ast[1][1] === 'while') {
+            let ret = '(';
+            for (let i = 0; i < conds.length; i += 1) {
+                ret += conds[i];
+                ret += '?';
+                ret += iftrues[i];
+                ret += ':';
+            }
+            ret += ifelse;
+            ret += ')';
+            return ret;
+        } else if (ast[1][1] === 'while') {
             let cond = run(ast[2]);
             let body = run(ast[3]);
             if (ast[4] != null) {
@@ -157,7 +156,8 @@ const run = function(ast) {
             return `pn.op2neq(${lhs},${rhs})`;
         }
         if (op === '=') {
-            return `(${lhs}=${rhs})`;
+            throw new Error("compiler expected not an equals");
+            // return `(${lhs}=${rhs})`;
         }
         throw new Error("unknown operator " + op);
     }

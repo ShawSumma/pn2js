@@ -1,0 +1,113 @@
+token = require "./token.js"
+node = require "./node.js"
+op = require "./op.js"
+
+is_break_token = cur -> {
+    first = cur 0
+    cur == token "number" || cur == token "keyword" || cur == token "string" || cur == token "ident" || cur == token "open" || cur == token "close"
+}
+
+is_break_pair = t1 -> t2 -> is_break_token(t1) && is_break_token(t2)
+
+parse_call = stream -> {
+    more = args -> arg -> depth -> index -> {
+        cur = stream index
+        if (cur == undefined) {
+            next_args = if (arg "length" != 0) {
+                    List "append" args (arg 0)   
+                } else {
+                    args
+                }
+            if (args "length" == 2) {
+                next_args 1
+            } else {
+                next_args
+            }
+        } elseif (depth == 0 && arg "length" != 0 && is_break_pair (arg (arg "length" - 1)) cur) {
+            more (List "append" args (arg 0)) (List "empty") depth index   
+        } else {
+            next = List "append" arg cur
+            if (cur 0 == token "open") {
+                more args next (depth + 1) (index + 1)
+            } elseif (cur 0 == token "close") {
+                if (depth == 0) {
+                    inner = arg "slice" 1
+                    next_arg = if (cur 0 == ")") {
+                            parse_opers inner
+                        } else {
+                            parse_lines inner
+                        }
+                    more (List "append" args next_arg) (List "empty") (depth - 1) (index + 1)
+                } else {
+                    more args next (depth - 1) (index + 1)
+                }
+            } else {
+                more args next depth (index + 1)
+            }
+        }
+    }
+
+    more (List of (node "call")) (List "empty") 0 0
+}
+
+parse_opers = stream -> {
+    more = depth -> args -> expr -> index -> {
+        cur = stream index
+        next = List "append" expr cur
+        if (cur == undefined) {
+            if (expr "length" != 0) {
+                op (List "append" args (parse_call expr))
+            } elseif(args "length" == 1) {
+                args 0
+            } else {
+                op args
+            }
+        } elseif (cur 0 == token "operator" && depth == 0) {
+            call_args = parse_call expr
+            with_next = List "append" args call_args
+            with_op = List "append" with_next cur
+            more depth with_op (List "empty") (index + 1)
+        } elseif (cur 0 == token "open") {
+            more (depth + 1) args next (index + 1)
+        } elseif (cur 0 == token "close") {
+            more (depth - 1) args next (index + 1)
+        } else {
+            more depth args next (index + 1)
+        }
+    }
+
+    more 0 (List "empty") (List "empty") 0
+}
+
+parse_lines = stream -> {
+    more = nodes -> line -> depth -> index -> {
+        cur = stream index
+        next = List "append" line cur
+        if (cur == undefined) {
+            elems = if (line "length" != 0) {
+                processed = parse_opers line
+                List "append" nodes processed
+            } else {
+                nodes
+            }
+            List "prepend" (node "block") elems
+        } elseif (cur 0 == token "open") {
+            more noees next (depth + 1) (index + 1)
+        } elseif (cur 0 == token "close") {
+            more nodes next (depth - 1) (index + 1)
+        } elseif (depth == 0 && cur 0 == token "newline" && line "length" != 0) {
+            processed = parse_opers line
+            more (List "append" nodes processed) (List "empty") depth (index + 1)
+        } else {
+            more nodes next depth (index + 1)
+        }
+    }
+
+    more (List "empty") (List "empty") 0 0
+}
+
+src -> {
+    ret = parse_lines src
+    println ret
+    ret
+}
