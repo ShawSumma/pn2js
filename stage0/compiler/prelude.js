@@ -31,9 +31,9 @@ const error = async (x) => {
 const pn = {
     op2add: async(x, y) => {
         if (Array.isArray(x) && Array.isArray(y)) {
-            return [...x, ...y]
+            return [...x, ...y];
         } else {
-            return x + y
+            return x + y;
         }
     },
     op2sub: async(x, y) => x - y,

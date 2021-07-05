@@ -31,9 +31,9 @@ const error = async (x) => {
 const pn = {
     op2add: async(x, y) => {
         if (Array.isArray(x) && Array.isArray(y)) {
-            return [...x, ...y]
+            return [...x, ...y];
         } else {
-            return x + y
+            return x + y;
         }
     },
     op2sub: async(x, y) => x - y,
@@ -47,12 +47,7 @@ const pn = {
     op2neq: async(x, y) => x !== y,
     op2call: async(x, y) => {
         if (x instanceof Function) {
-            let ret = x(y);
-            if (ret instanceof Promise) {
-                return await ret;
-            } else {
-                return ret;
-            }
+            return await x(y);
         } else {
             let ret = x[y];
             if (ret instanceof Function) {
@@ -64,12 +59,7 @@ const pn = {
     },
     cons: async(cls, args) => {
         if (cls instanceof Function) {
-            let ret = cls(...args);
-            if (ret instanceof Promise) {
-                return await ret;
-            } else {
-                return await ret;
-            }
+            return await cls(...args);
         } else {
             return await cls.cons(args);
         }

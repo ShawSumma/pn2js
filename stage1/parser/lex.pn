@@ -24,7 +24,7 @@ ready = src -> index -> {
     } elseif (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")) {
         ident src index ""
     } elseif (char == quote) {
-        string src index ""
+        string src (index + 1) ""
     } elseif (ops "includes" char) {
         operator src index ""
     } else {
@@ -34,7 +34,7 @@ ready = src -> index -> {
 
 ident = src -> index -> token -> {
     char = src index
-    if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")){
+    if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z") || char == "_"){
         ident src (index + 1) (token + char)
     } else {
         type = if (keywords "includes" token) {
@@ -70,10 +70,10 @@ operator = src -> index -> token -> {
 string = src -> index -> token -> {
     char = src index
     if (char != quote) {
-        quote src (index + 1) (token + char)
+        string src (index + 1) (token + char)
     } else {
         ret = List of (types "string") token
-        List "prepend" ret (ready src index)
+        List "prepend" ret (ready src (index + 1))
     }
 }
 

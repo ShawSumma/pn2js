@@ -31,9 +31,9 @@ const error = async (x) => {
 const pn = {
     op2add: async(x, y) => {
         if (Array.isArray(x) && Array.isArray(y)) {
-            return [...x, ...y]
+            return [...x, ...y];
         } else {
-            return x + y
+            return x + y;
         }
     },
     op2sub: async(x, y) => x - y,
@@ -75,4 +75,4 @@ const pn = {
         }
     },
 };
-module.exports = (async function(){return(await (async function(){;return await pn.op2call(println,await (async function(){;return await pn.cons(List,[1,2,3]);})());})());})();
+module.exports = (async function(){return(await (async function(){let n=2;let x=(await (async function(){;return await pn.op2eq(n,1);})()?await (async function(){;return 0;})():await (async function(){;return await pn.op2eq(x,2);})()?await (async function(){;return 1;})():await (async function(){;return 2;})());return await pn.op2call(println,x);})());})();

@@ -106,8 +106,10 @@ oper = ast -> {
             "await pn.op2gte("+lhs+","+rhs+")";
         } elseif (op == "==") {
             "await pn.op2eq("+lhs+","+rhs+")";
-        } elseif (op == ">=") {
+        } elseif (op == "!=") {
             "await pn.op2neq("+lhs+","+rhs+")";
+        } else {
+            error ("unknown op" + op)
         }
     }
 }
@@ -122,13 +124,40 @@ compile = ast -> {
     } elseif (ast 0 == node "call") {
         if (ast 1 0 != token "keyword") {
             call ast
+        } elseif (ast 1 1 == "if") {
+            more = conds -> iftrues -> iffalse -> index -> {
+                if (index >= ast "length") {
+                    more2 = ret -> i -> {
+                        if (i >= conds "length") {
+                            ret + iffalse
+                        } else {
+                            next = ret + (conds i) + "?" + (iftrues i) + ":"
+                            more2 next (i + 1)
+                        }
+                    }
+
+                    "(" + more2 "" 0 + ")"
+                } elseif (ast index 1 == "else") {
+                    iffalse2 = (compile (ast (index + 1)))
+                    more conds iftrues iffalse2 (index + 2)
+                } elseif (ast index 1 == "elseif") {
+                    cond2 = compile (ast (index + 1)) 
+                    iftrue2 = compile (ast (index + 2)) 
+                    more (List "append" conds cond2) (List "append" iftrues iftrue2) iffalse (index + 3)
+                } else {
+                    error "expected else or elseif"
+                }
+            }
+
+            cond = compile (ast 2)
+            iftrue = compile (ast 3)
+
+            more (List of cond) (List of iftrue) "null" 4
         } else {
             error "keyword"
         }
     } elseif (ast 0 == node "oper") {
-        res = oper ast
-        println res
-        res
+        oper ast
     } elseif (ast 0 == token "ident") {
         ast 1
     } elseif (ast 0 == token "number") {
@@ -136,7 +165,6 @@ compile = ast -> {
     } elseif (ast 0 == token "string") {
         tick + ast 1 + tick
     } else {
-        println ast
         error "unknwon ast"
     }
 }

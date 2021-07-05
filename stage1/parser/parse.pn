@@ -97,9 +97,13 @@ parse_lines = stream -> {
             more nodes next (depth + 1) (index + 1)
         } elseif (cur 0 == token "close") {
             more nodes next (depth - 1) (index + 1)
-        } elseif (depth == 0 && cur 0 == token "newline" && line "length" != 0) {
-            processed = parse_opers line
-            more (List "append" nodes processed) (List "empty") depth (index + 1)
+        } elseif (depth == 0 && cur 0 == token "newline") {
+            if (line "length" != 0) {
+                processed = parse_opers line
+                more (List "append" nodes processed) (List "empty") depth (index + 1)
+            } else {
+                more nodes line depth (index + 1)
+            }
         } else {
             more nodes next depth (index + 1)
         }

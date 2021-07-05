@@ -1,1 +1,1 @@
-Enum of "keyword" "ident" "number" "operator" "open" "close"
+Enum of "keyword" "ident" "number" "operator" "open" "close" "string" "newline"

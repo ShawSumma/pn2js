@@ -84,13 +84,6 @@ const run = function(ast) {
             ret += ifelse;
             ret += ')';
             return ret;
-        } else if (ast[1][1] === 'while') {
-            let cond = run(ast[2]);
-            let body = run(ast[3]);
-            if (ast[4] != null) {
-                throw new Error("compiler expected nothing after while loop body");
-            }
-            return `(async function() {while (${cond}) {let ret = ${body}}; return null;})()`
         } else {
             throw new Error("cannot use keyword there");
         }
