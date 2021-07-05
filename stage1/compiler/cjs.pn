@@ -1,0 +1,82 @@
+node = require "../parser/node.js"
+token = require "../parser/token.js"
+prelude = require "./prelude.js"
+
+block = ast -> {
+    more = ret -> i -> {
+        sub = ast i
+        if (sub 0 == node "oper" && sub 1 == "=") {
+            next = "let " + compile (sub 2) + "=" + compile (sub 3)
+            if (i + 1 == ast "length") {
+                error "must not have assign as last in block"
+            } else {
+                more (List "append" ret next) (i + 1)
+            }
+        } else {
+            next = (compile sub)
+            if (i + 1 != ast "length") {
+                more (List "append" ret next) (i + 1)
+            } else {
+                body = ret "join" ";"
+                "(async function(){" + body + ";return " + next + ";})()"
+            }
+        }
+    }
+
+    more (List "empty") 1
+}
+
+of_cons = f -> a -> {
+    "async pn.cons(" + f + ",[" + a "join" "," + "])"
+}
+
+opcall = f -> a -> {
+    "async pn.op2call(" + f + "," + a + ")"
+}
+
+call = ast -> {
+    more = ret -> i -> {
+        cur = ast i
+        if (cur == undefined) {
+            ret
+        } elseif(cur 0 == token "keyword" && cur 1 == "of") {
+            raw_args = ast "slice" (i + 1)
+            args = raw_args "map" compile
+            of_cons ret args
+        } else {
+            next = opcall ret (compile cur)
+            more next (i + 1)
+        }
+    }
+
+    more (compile (ast 1)) 2
+}
+
+compile = ast -> {
+    if (ast 0 == node "block") {
+        if (ast "length" == 1) {
+            "null"
+        } else {
+            block ast
+        }
+    } elseif (ast 0 == node "call") {
+        if (ast 1 0 != token "keyword") {
+            call ast
+        } else {
+            error "keyword"
+        }
+    } elseif (ast 0 == node "oper") {
+        error "oper"
+    } elseif (ast 0 == token "ident") {
+        ast 1
+    } elseif (ast 0 == token "number") {
+        ast 1
+    } elseif (ast 0 == token "string") {
+        tick + ast 1 + tick
+    }
+}
+
+ast -> {
+    res = prelude + "module.exports = async() => " + compile ast + ";"
+    res
+}

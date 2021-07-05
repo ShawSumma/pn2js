@@ -65,4 +65,7 @@ op_level = level -> stream -> {
     }
 }
 
-stream -> op_level 0 stream
+stream -> {
+    ret = op_level 0 stream
+    ret
+}

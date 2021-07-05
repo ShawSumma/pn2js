@@ -11,13 +11,14 @@ ready = src -> index -> {
     } elseif (" " == char) {
         ready src (index + 1)
     } elseif (newline == char) {
-        ready src (index + 1)
+        ret = List of (types "newline")
+        List "prepend" ret (ready src (index + 1))
     } elseif ("({[" "includes" char) {
         ret = List of (types "open") char
-        token "prepend" ret (ready src index)
+        List "prepend" ret (ready src (index + 1))
     } elseif ("]})" "includes" char) {
         ret = List of (types "close") char
-        token "prepend" ret (ready src index)
+        List "prepend" ret (ready src (index + 1))
     } elseif ("0" <= char && char <= "9") {
         number src index ""
     } elseif (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")) {
@@ -36,7 +37,12 @@ ident = src -> index -> token -> {
     if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")){
         ident src (index + 1) (token + char)
     } else {
-        ret = List of (types "ident") token
+        type = if (keywords "includes" token) {
+            types "keyword"
+        } else {
+            types "ident"
+        }
+        ret = List of type token
         List "prepend" ret (ready src index)
     }
 }
@@ -57,7 +63,6 @@ operator = src -> index -> token -> {
         operator src (index + 1) (token + char)
     } else {
         ret = List of (types "operator") token
-        println token
         List "prepend" ret (ready src index)
     }
 }

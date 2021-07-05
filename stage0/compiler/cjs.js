@@ -22,7 +22,7 @@ const run = function(ast) {
         let last = ret.pop();
         ret.push(`return ${last};`);
         let body = ret.join(';');
-        return `(function(){${body}})()`;
+        return `(async function(){${body}})()`;
     }
     if (ast[0] === node.call) {
         if (ast[1][0] !== token.keyword) {
@@ -33,9 +33,9 @@ const run = function(ast) {
                     for (let j = i + 1; j < ast.length; j += 1) {
                         args.push(run(ast[j]));
                     }
-                    return `pn.cons(${ret}, [${args.join(',')}])`;
+                    return `await pn.cons(${ret}, [${args.join(',')}])`;
                 } else {
-                    ret = `pn.op2call(${ret}, ${run(ast[i])})`;
+                    ret = `await pn.op2call(${ret}, ${run(ast[i])})`;
                 }
             }
             return ret;
@@ -90,7 +90,7 @@ const run = function(ast) {
             if (ast[4] != null) {
                 throw new Error("compiler expected nothing after while loop body");
             }
-            return `(function() {while (${cond}) {let ret = ${body}}; return null;})()`
+            return `(await function() {while (${cond}) {let ret = ${body}}; return null;})()`
         } else {
             throw new Error("cannot use keyword there");
         }
@@ -101,9 +101,9 @@ const run = function(ast) {
             let lhs = ast[2];
             let rhs = run(ast[3]);
             if (lhs[0] === node.call) {
-                let ret = '(';
+                let ret = 'async(';
                 for (let i = 1; i < lhs.length; i += 1) {
-                    ret += '(';
+                    ret += 'async(';
                     ret += run(lhs[i]);
                     ret += ')=>';
                 }
@@ -111,7 +111,7 @@ const run = function(ast) {
                 ret += ')';
                 return ret;
             } else {
-                return `((${lhs[1]})=>${rhs})`;
+                return `(async(${lhs[1]})=>${rhs})`;
             }
         }
         let lhs = run(ast[2]);
@@ -123,37 +123,37 @@ const run = function(ast) {
             return `(${lhs}&&${rhs})`;
         }
         if (op === '+') {
-            return `pn.op2add(${lhs},${rhs})`;
+            return `await pn.op2add(${lhs},${rhs})`;
         }
         if (op === '-') {
-            return `pn.op2sub(${lhs},${rhs})`;
+            return `await pn.op2sub(${lhs},${rhs})`;
         }
         if (op === '*') {
-            return `pn.op2mul(${lhs},${rhs})`;
+            return `await pn.op2mul(${lhs},${rhs})`;
         }
         if (op === '/') {
-            return `pn.op2div(${lhs},${rhs})`;
+            return `await pn.op2div(${lhs},${rhs})`;
         }
         if (op === '/') {
-            return `pn.op2div(${lhs},${rhs})`;
+            return `await pn.op2div(${lhs},${rhs})`;
         }
         if (op === '<') {
-            return `pn.op2lt(${lhs},${rhs})`;
+            return `await pn.op2lt(${lhs},${rhs})`;
         }
         if (op === '>') {
-            return `pn.op2gt(${lhs},${rhs})`;
+            return `await pn.op2gt(${lhs},${rhs})`;
         }
         if (op === '<=') {
-            return `pn.op2lte(${lhs},${rhs})`;
+            return `await pn.op2lte(${lhs},${rhs})`;
         }
         if (op === '>=') {
-            return `pn.op2gte(${lhs},${rhs})`;
+            return `await pn.op2gte(${lhs},${rhs})`;
         }
         if (op === '==') {
-            return `pn.op2eq(${lhs},${rhs})`;
+            return `await pn.op2eq(${lhs},${rhs})`;
         }
         if (op === '!=') {
-            return `pn.op2neq(${lhs},${rhs})`;
+            return `await pn.op2neq(${lhs},${rhs})`;
         }
         if (op === '=') {
             throw new Error("compiler expected not an equals");
@@ -174,5 +174,5 @@ const run = function(ast) {
 }
 
 module.exports = function(ast) {
-    return prelude + 'module.exports = ' + run(ast) + ';';
+    return prelude + 'module.exports = async() => ' + run(ast) + ';';
 };

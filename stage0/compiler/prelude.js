@@ -4,15 +4,15 @@ const quote = '"';
 const newline = String.fromCharCode(10);
 
 const List = Object.freeze({
-    cons: x => Object.freeze([...x]),
+    cons: async(x) => Object.freeze([...x]),
     empty: Object.freeze([]),
-    prepend: e => x => Object.freeze([e, ...x]),
-    append: x => e => Object.freeze([...x, e]),
-    concat: x => y => Object.freeze([...x, ...y]),
+    prepend: async(e) => async (x) => Object.freeze([e, ...x]),
+    append: async (x) => async (e) => Object.freeze([...x, e]),
+    concat: async (x) => async (y) => Object.freeze([...x, ...y]),
 });
 
 const Enum = Object.freeze({
-    cons: x => {
+    cons: async (x) => {
         let ret = {};
         for (let i of x) {
             ret[i] = Symbol(i);
@@ -21,30 +21,30 @@ const Enum = Object.freeze({
     },
 });
 
-const error = x => {
+const error = async (x) => {
     throw new Error(x);
 };
 
 const pn = {
-    op2add: (x, y) => {
+    op2add: async(x, y) => {
         if (Array.isArray(x) && Array.isArray(y)) {
             return [...x, ...y]
         } else {
             return x + y
         }
     },
-    op2sub: (x, y) => x - y,
-    op2mul: (x, y) => x * y,
-    op2div: (x, y) => x / y,
-    op2lt: (x, y) => x < y,
-    op2gt: (x, y) => x > y,
-    op2lte: (x, y) => x <= y,
-    op2gte: (x, y) => x >= y,
-    op2eq: (x, y) => x === y,
-    op2neq: (x, y) => x !== y,
-    op2call: (x, y) => {
+    op2sub: async(x, y) => x - y,
+    op2mul: async(x, y) => x * y,
+    op2div: async(x, y) => x / y,
+    op2lt: async(x, y) => x < y,
+    op2gt: async(x, y) => x > y,
+    op2lte: async(x, y) => x <= y,
+    op2gte: async(x, y) => x >= y,
+    op2eq: async(x, y) => x === y,
+    op2neq: async(x, y) => x !== y,
+    op2call: async(x, y) => {
         if (x instanceof Function) {
-            return x(y);
+            return await x(y);
         } else {
             let ret = x[y];
             if (ret instanceof Function) {

@@ -2,12 +2,12 @@ token = require "./token.js"
 node = require "./node.js"
 op = require "./op.js"
 
-is_break_token = cur -> {
-    first = cur 0
+is_break_token = atok -> {
+    cur = atok 0
     cur == token "number" || cur == token "keyword" || cur == token "string" || cur == token "ident" || cur == token "open" || cur == token "close"
 }
 
-is_break_pair = t1 -> t2 -> is_break_token(t1) && is_break_token(t2)
+is_break_pair = t1 -> t2 -> is_break_token t1 && is_break_token t2
 
 parse_call = stream -> {
     more = args -> arg -> depth -> index -> {
@@ -18,7 +18,7 @@ parse_call = stream -> {
                 } else {
                     args
                 }
-            if (args "length" == 2) {
+            if (next_args "length" == 2) {
                 next_args 1
             } else {
                 next_args
@@ -30,7 +30,7 @@ parse_call = stream -> {
             if (cur 0 == token "open") {
                 more args next (depth + 1) (index + 1)
             } elseif (cur 0 == token "close") {
-                if (depth == 0) {
+                if (depth == 1) {
                     inner = arg "slice" 1
                     next_arg = if (cur 0 == ")") {
                             parse_opers inner
@@ -92,7 +92,7 @@ parse_lines = stream -> {
             }
             List "prepend" (node "block") elems
         } elseif (cur 0 == token "open") {
-            more noees next (depth + 1) (index + 1)
+            more nodes next (depth + 1) (index + 1)
         } elseif (cur 0 == token "close") {
             more nodes next (depth - 1) (index + 1)
         } elseif (depth == 0 && cur 0 == token "newline" && line "length" != 0) {
@@ -108,6 +108,5 @@ parse_lines = stream -> {
 
 src -> {
     ret = parse_lines src
-    println ret
     ret
 }

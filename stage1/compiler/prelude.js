@@ -1,7 +1,9 @@
 module.exports = `
 const println = console.log;
+const p = console.log
 const quote = '"';
 const newline = String.fromCharCode(10);
+const tick = String.fromCharCode(96);
 
 const List = Object.freeze({
     cons: x => Object.freeze([...x]),

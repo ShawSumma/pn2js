@@ -14,6 +14,7 @@ run0: .fake
 
 clean1: .fake
 	rm $(NEXT)/index.js
+	rm $(NEXT)/compiler/cjs.js
 	rm $(NEXT)/parser/keyword.js
 	rm $(NEXT)/parser/lex.js
 	rm $(NEXT)/parser/node.js
@@ -24,6 +25,7 @@ clean1: .fake
 
 stage1: .fake
 	node $(ROOT)/index.js $(NEXT)/index.pn
+	node $(ROOT)/index.js $(NEXT)/compiler/cjs.pn
 	node $(ROOT)/index.js $(NEXT)/parser/keyword.pn
 	node $(ROOT)/index.js $(NEXT)/parser/lex.pn
 	node $(ROOT)/index.js $(NEXT)/parser/node.pn
@@ -37,7 +39,7 @@ run1: stage1
 	node ./pn/test.js
 
 stage2: .fake
-	cp -r stage1 stage0
+	cp -r stage1 stage2
 	@$(MAKE) --no-print-directory stage1 ROOT=./stage0 NEXT=./stage1
 	@$(MAKE) --no-print-directory stage1 ROOT=./stage1 NEXT=./stage2
 
