@@ -47,12 +47,7 @@ const pn = {
     op2neq: async(x, y) => x !== y,
     op2call: async(x, y) => {
         if (x instanceof Function) {
-            let ret = x(y);
-            if (ret instanceof Promise) {
-                return await ret;
-            } else {
-                return ret;
-            }
+            return await x(y);
         } else {
             let ret = x[y];
             if (ret instanceof Function) {
@@ -64,15 +59,10 @@ const pn = {
     },
     cons: async(cls, args) => {
         if (cls instanceof Function) {
-            let ret = cls(...args);
-            if (ret instanceof Promise) {
-                return await ret;
-            } else {
-                return await ret;
-            }
+            return await cls(...args);
         } else {
             return await cls.cons(args);
         }
     },
 };
-module.exports = (async function(){return(await (async function(){let n=2;let x=(await (async function(){;return await pn.op2eq(n,1);})()?await (async function(){;return 0;})():await (async function(){;return await pn.op2eq(x,2);})()?await (async function(){;return 1;})():await (async function(){;return 2;})());return await pn.op2call(println,x);})());})();
+module.exports = (async function(){return(await (async function(){let n=2;let x=(await (async function(){;return await pn.op2eq(n,1);})()?await (async function(){;return 0;})():await (async function(){;return await pn.op2eq(n,2);})()?await (async function(){;return 1;})():await (async function(){;return 2;})());return await pn.op2call(println,x);})());})();

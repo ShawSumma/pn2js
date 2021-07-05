@@ -87,27 +87,27 @@ oper = ast -> {
         } elseif (op == "&&") {
             "(" + lhs + "&&" + rhs + ")"
         } elseif (op == "+") {
-            "await pn.op2add("+lhs+","+rhs+")";
+            "await pn.op2add("+lhs+","+rhs+")"
         } elseif (op == "-") {
-            "await pn.op2sub("+lhs+","+rhs+")";
+            "await pn.op2sub("+lhs+","+rhs+")"
         } elseif (op == "*") {
-            "await pn.op2mul("+lhs+","+rhs+")";
+            "await pn.op2mul("+lhs+","+rhs+")"
         } elseif (op == "/") {
-            "await pn.op2div("+lhs+","+rhs+")";
+            "await pn.op2div("+lhs+","+rhs+")"
         } elseif (op == "%") {
-            "await pn.op2mod("+lhs+","+rhs+")";
+            "await pn.op2mod("+lhs+","+rhs+")"
         } elseif (op == "<") {
-            "await pn.op2lt("+lhs+","+rhs+")";
+            "await pn.op2lt("+lhs+","+rhs+")"
         } elseif (op == ">") {
-            "await pn.op2gt("+lhs+","+rhs+")";
+            "await pn.op2gt("+lhs+","+rhs+")"
         } elseif (op == "<=") {
-            "await pn.op2lte("+lhs+","+rhs+")";
+            "await pn.op2lte("+lhs+","+rhs+")"
         } elseif (op == ">=") {
-            "await pn.op2gte("+lhs+","+rhs+")";
+            "await pn.op2gte("+lhs+","+rhs+")"
         } elseif (op == "==") {
-            "await pn.op2eq("+lhs+","+rhs+")";
+            "await pn.op2eq("+lhs+","+rhs+")"
         } elseif (op == "!=") {
-            "await pn.op2neq("+lhs+","+rhs+")";
+            "await pn.op2neq("+lhs+","+rhs+")"
         } else {
             error ("unknown op" + op)
         }

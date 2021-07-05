@@ -34,7 +34,7 @@ ready = src -> index -> {
 
 ident = src -> index -> token -> {
     char = src index
-    if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z") || char == "_"){
+    if (("a" <= char && char <= "z") || ("A" <= char && char <= "Z") || ("1" <= char && char <= "9") || char == "_"){
         ident src (index + 1) (token + char)
     } else {
         type = if (keywords "includes" token) {
