@@ -18,7 +18,7 @@ block = ast -> {
                 more (List "append" ret next) (i + 1)
             } else {
                 body = ret "join" ";"
-                "(async function(){" + body + ";return " + next + ";})()"
+                "await (async function(){" + body + ";return " + next + ";})()"
             }
         }
     }
@@ -27,11 +27,11 @@ block = ast -> {
 }
 
 of_cons = f -> a -> {
-    "async pn.cons(" + f + ",[" + a "join" "," + "])"
+    "await pn.cons(" + f + ",[" + a "join" "," + "])"
 }
 
 opcall = f -> a -> {
-    "async pn.op2call(" + f + "," + a + ")"
+    "await pn.op2call(" + f + "," + a + ")"
 }
 
 call = ast -> {
@@ -40,8 +40,16 @@ call = ast -> {
         if (cur == undefined) {
             ret
         } elseif(cur 0 == token "keyword" && cur 1 == "of") {
-            raw_args = ast "slice" (i + 1)
-            args = raw_args "map" compile
+            more = n -> {
+                if (n < ast "length") {
+                    first = compile (ast n)
+                    rest = more (n + 1)
+                    List "prepend" first rest
+                } else {
+                    List "empty"
+                }
+            }
+            args = more (i + 1)
             of_cons ret args
         } else {
             next = opcall ret (compile cur)
@@ -50,6 +58,58 @@ call = ast -> {
     }
 
     more (compile (ast 1)) 2
+}
+
+oper = ast -> {
+    op = ast 1
+    if (op == "->") {
+        lhs = ast 2
+        rhs = compile (ast 3)
+        if (lhs 0 == node "call") {
+            more = ret -> i -> {
+                if (i < lhs "length") {
+                    ret
+                } else {
+                    ret + "async(" + compile (lhs i) + ")=>"
+                }
+            }
+
+            ret = "(" + more "" 1 + compile (ast (ast "length" - 1)) + ")"
+            ret
+        } else {
+            "(async(" + lhs 1 + ")=>" + rhs + ")"
+        }
+    } else {
+        lhs = compile (ast 2)
+        rhs = compile (ast 3)
+        if (op == "||") {
+            "(" + lhs + "||" + rhs + ")"
+        } elseif (op == "&&") {
+            "(" + lhs + "&&" + rhs + ")"
+        } elseif (op == "+") {
+            "await pn.op2add("+lhs+","+rhs+")";
+        } elseif (op == "-") {
+            "await pn.op2sub("+lhs+","+rhs+")";
+        } elseif (op == "*") {
+            "await pn.op2mul("+lhs+","+rhs+")";
+        } elseif (op == "/") {
+            "await pn.op2div("+lhs+","+rhs+")";
+        } elseif (op == "%") {
+            "await pn.op2mod("+lhs+","+rhs+")";
+        } elseif (op == "<") {
+            "await pn.op2lt("+lhs+","+rhs+")";
+        } elseif (op == ">") {
+            "await pn.op2gt("+lhs+","+rhs+")";
+        } elseif (op == "<=") {
+            "await pn.op2lte("+lhs+","+rhs+")";
+        } elseif (op == ">=") {
+            "await pn.op2gte("+lhs+","+rhs+")";
+        } elseif (op == "==") {
+            "await pn.op2eq("+lhs+","+rhs+")";
+        } elseif (op == ">=") {
+            "await pn.op2neq("+lhs+","+rhs+")";
+        }
+    }
 }
 
 compile = ast -> {
@@ -66,17 +126,22 @@ compile = ast -> {
             error "keyword"
         }
     } elseif (ast 0 == node "oper") {
-        error "oper"
+        res = oper ast
+        println res
+        res
     } elseif (ast 0 == token "ident") {
         ast 1
     } elseif (ast 0 == token "number") {
         ast 1
     } elseif (ast 0 == token "string") {
         tick + ast 1 + tick
+    } else {
+        println ast
+        error "unknwon ast"
     }
 }
 
 ast -> {
-    res = prelude + "module.exports = async() => " + compile ast + ";"
+    res = prelude + "module.exports = (async function(){return(" + compile ast + ");})();"
     res
 }

@@ -54,7 +54,7 @@ op_level = level -> stream -> {
             } elseif (is_level level cur) {
                 res = op_level (level + 1) arg
                 args1 = List "append" args res
-                args2 = List "append" args (cur 1)
+                args2 = List "append" args1 (cur 1)
                 more args2 (List "empty") (index + 1)
             } else {
                 more args (List "append" arg cur) (index + 1)

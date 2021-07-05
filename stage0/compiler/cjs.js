@@ -22,7 +22,7 @@ const run = function(ast) {
         let last = ret.pop();
         ret.push(`return ${last};`);
         let body = ret.join(';');
-        return `(async function(){${body}})()`;
+        return `await (async function(){${body}})()`;
     }
     if (ast[0] === node.call) {
         if (ast[1][0] !== token.keyword) {
@@ -90,14 +90,14 @@ const run = function(ast) {
             if (ast[4] != null) {
                 throw new Error("compiler expected nothing after while loop body");
             }
-            return `(await function() {while (${cond}) {let ret = ${body}}; return null;})()`
+            return `(async function() {while (${cond}) {let ret = ${body}}; return null;})()`
         } else {
             throw new Error("cannot use keyword there");
         }
     }
     if (ast[0] === node.oper) {
         let op = ast[1];
-        if (op == '->') {
+        if (op === '->') {
             let lhs = ast[2];
             let rhs = run(ast[3]);
             if (lhs[0] === node.call) {
@@ -134,8 +134,8 @@ const run = function(ast) {
         if (op === '/') {
             return `await pn.op2div(${lhs},${rhs})`;
         }
-        if (op === '/') {
-            return `await pn.op2div(${lhs},${rhs})`;
+        if (op === '%') {
+            return `await pn.op2mod(${lhs},${rhs})`;
         }
         if (op === '<') {
             return `await pn.op2lt(${lhs},${rhs})`;
@@ -174,5 +174,5 @@ const run = function(ast) {
 }
 
 module.exports = function(ast) {
-    return prelude + 'module.exports = async() => ' + run(ast) + ';';
+    return prelude + 'module.exports = (async function(){return(' + run(ast) + ');})()';
 };

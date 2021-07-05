@@ -1,7 +1,10 @@
 module.exports = `
-const println = console.log;
+const println = async (val) => {
+    console.dir(val, {depth: Infinity});
+};
 const quote = '"';
 const newline = String.fromCharCode(10);
+const tick = String.fromCharCode(96);
 
 const List = Object.freeze({
     cons: async(x) => Object.freeze([...x]),
@@ -44,7 +47,12 @@ const pn = {
     op2neq: async(x, y) => x !== y,
     op2call: async(x, y) => {
         if (x instanceof Function) {
-            return await x(y);
+            let ret = x(y);
+            if (ret instanceof Promise) {
+                return await ret;
+            } else {
+                return ret;
+            }
         } else {
             let ret = x[y];
             if (ret instanceof Function) {
@@ -54,11 +62,16 @@ const pn = {
             }
         }
     },
-    cons: (cls, args) => {
+    cons: async(cls, args) => {
         if (cls instanceof Function) {
-            return cls(...args);
+            let ret = cls(...args);
+            if (ret instanceof Promise) {
+                return await ret;
+            } else {
+                return await ret;
+            }
         } else {
-            return cls.cons(args);
+            return await cls.cons(args);
         }
     },
 };

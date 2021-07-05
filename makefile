@@ -4,9 +4,9 @@ NEXT=./stage1
 defualt: run
 
 run: .fake
-	@$(MAKE) --no-print-directory run0
-	@$(MAKE) --no-print-directory run1
-	@$(MAKE) --no-print-directory run2
+	$(MAKE) --no-print-directory run0
+	$(MAKE) --no-print-directory run1
+	$(MAKE) --no-print-directory run2
 
 run0: .fake
 	node ./stage0 ./pn/test.pn
@@ -40,8 +40,8 @@ run1: stage1
 
 stage2: .fake
 	cp -r stage1 stage2
-	@$(MAKE) --no-print-directory stage1 ROOT=./stage0 NEXT=./stage1
-	@$(MAKE) --no-print-directory stage1 ROOT=./stage1 NEXT=./stage2
+	$(MAKE) --no-print-directory stage1 ROOT=./stage0 NEXT=./stage1
+	$(MAKE) --no-print-directory stage1 ROOT=./stage1 NEXT=./stage2
 
 run2: stage2
 	node ./stage2/index.js ./pn/test.pn

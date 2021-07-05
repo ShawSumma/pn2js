@@ -56,7 +56,9 @@ parse_opers = stream -> {
         next = List "append" expr cur
         if (cur == undefined) {
             if (expr "length" != 0) {
-                op (List "append" args (parse_call expr))
+                parsed_call = parse_call expr
+                full = (List "append" args parsed_call)
+                op full
             } elseif(args "length" == 1) {
                 args 0
             } else {
