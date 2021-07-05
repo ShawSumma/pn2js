@@ -1,3 +1,1 @@
-module.exports = [
-    "if", "else", "elseif", "while", "of",
-];
+module.exports = ["if", "else", "elseif", "while", "of"];

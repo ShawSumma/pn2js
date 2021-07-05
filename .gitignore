@@ -1,4 +1,4 @@
 node_modules
 stage1/*.js
 stage1/*/*.js
-stage2
+test

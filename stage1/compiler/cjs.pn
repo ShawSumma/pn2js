@@ -1,6 +1,6 @@
 node = require "../parser/node.js"
 token = require "../parser/token.js"
-prelude = require "./prelude.js"
+prelude = require "../../prelude.js"
 
 block = ast -> {
     more = ret -> i -> {
@@ -74,8 +74,7 @@ oper = ast -> {
                 }
             }
 
-            ret = "(" + more "" 1 + compile (ast (ast "length" - 1)) + ")"
-            ret
+            "(" + more "" 1 + compile (ast (ast "length" - 1)) + ")"
         } else {
             "(async(" + lhs 1 + ")=>" + rhs + ")"
         }

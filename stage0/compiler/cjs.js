@@ -1,6 +1,6 @@
 const node = require('../parser/node.js');
 const token = require('../parser/token.js');
-const prelude = require('./prelude.js');
+const prelude = require('../../prelude.js');
 
 const run = function(ast) {
     if (ast[0] === node.block) {

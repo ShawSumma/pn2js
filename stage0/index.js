@@ -1,5 +1,4 @@
 const fs = require('fs');
-const util = require('util');
 
 const lex = require('./parser/lex.js');
 const parse = require('./parser/parse.js');
