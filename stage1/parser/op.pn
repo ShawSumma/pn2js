@@ -1,6 +1,6 @@
-token = require "./token.js"
-node = require "./node.js"
-prec = require "./prec.js"
+token = import "./token.js"
+node = import "./node.js"
+prec = import "./prec.js"
 
 is_level = level -> cur -> {
     cur 0 == token "operator" && prec level "includes" (cur 1)
@@ -38,8 +38,7 @@ op_level = level -> stream -> {
         stream 0
     } else {
         more = args -> arg -> index -> {
-            cur = stream index
-            if (cur == undefined) {
+            if (index >= stream "length") {
                 args_res = if (arg "length" != 0) {
                     res = op_level (level + 1) arg
                     List "append" args res
@@ -51,13 +50,16 @@ op_level = level -> stream -> {
                 } else {
                     bind_front args_res
                 }
-            } elseif (is_level level cur) {
-                res = op_level (level + 1) arg
-                args1 = List "append" args res
-                args2 = List "append" args1 (cur 1)
-                more args2 (List "empty") (index + 1)
             } else {
-                more args (List "append" arg cur) (index + 1)
+                cur = stream index
+                if (is_level level cur) {
+                    res = op_level (level + 1) arg
+                    args1 = List "append" args res
+                    args2 = List "append" args1 (cur 1)
+                    more args2 (List "empty") (index + 1)
+                } else {
+                    more args (List "append" arg cur) (index + 1)
+                }
             }
         } 
 

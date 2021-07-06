@@ -1,20 +1,18 @@
 
-fs = require "fs"
-util = require "util"
+fs = import "fs"
 
-lex = require "./parser/lex.js"
-parse = require "./parser/parse.js"
-cjs = require "./compiler/cjs.js"
-
+lex = import "./parser/lex.js"
+parse = import "./parser/parse.js"
+cjs = import "./compiler/cjs.js"
 
 main = args -> {
-    filename = args 2
-    src = String (fs "readFileSync" filename)
+    filename = args 1
+    src = slurp filename
     tokens = lex src
     ast = parse tokens
     js = cjs ast
     outfile = filename "replace" of ".pn" ".js"
-    fs "writeFileSync" of outfile js
+    dump outfile js
 }
 
-main (process "argv")
+main args

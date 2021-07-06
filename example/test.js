@@ -92,4 +92,4 @@ const pn = {
             return await cls.cons(args);
         }
     },
-};
+};module.exports = (async function(){return($println);})();

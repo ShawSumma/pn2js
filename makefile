@@ -25,8 +25,4 @@ stage1: .fake
 	node $(ROOT)/index.js $(NEXT)/parser/prec.pn
 	node $(ROOT)/index.js $(NEXT)/parser/token.pn
 
-run1: stage1
-	node ./stage1/index.js ./pn/test.pn
-	node ./pn/test.js
-
 .fake:

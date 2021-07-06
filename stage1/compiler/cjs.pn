@@ -1,6 +1,6 @@
-node = require "../parser/node.js"
-token = require "../parser/token.js"
-prelude = require "../../prelude.js"
+node = import "../parser/node.js"
+token = import "../parser/token.js"
+prelude = slurp "./prelude.js"
 
 block = ast -> {
     more = ret -> i -> {
@@ -16,6 +16,8 @@ block = ast -> {
             next = (compile sub)
             if (i + 1 != ast "length") {
                 more (List "append" ret next) (i + 1)
+            } elseif (ret "length" == 0) {
+                next
             } else {
                 body = ret "join" ";"
                 "await (async function(){" + body + ";return " + next + ";})()"
@@ -36,24 +38,26 @@ opcall = f -> a -> {
 
 call = ast -> {
     more = ret -> i -> {
-        cur = ast i
-        if (cur == undefined) {
+        if (i >= ast "length") {
             ret
-        } elseif(cur 0 == token "keyword" && cur 1 == "of") {
-            more = n -> {
-                if (n < ast "length") {
-                    first = compile (ast n)
-                    rest = more (n + 1)
-                    List "prepend" first rest
-                } else {
-                    List "empty"
-                }
-            }
-            args = more (i + 1)
-            of_cons ret args
         } else {
-            next = opcall ret (compile cur)
-            more next (i + 1)
+            cur = ast i
+            if(cur 0 == token "keyword" && cur 1 == "of") {
+                more = n -> {
+                    if (n < ast "length") {
+                        first = compile (ast n)
+                        rest = more (n + 1)
+                        List "prepend" first rest
+                    } else {
+                        List "empty"
+                    }
+                }
+                args = more (i + 1)
+                of_cons ret args
+            } else {
+                next = opcall ret (compile cur)
+                more next (i + 1)
+            }
         }
     }
 
@@ -70,13 +74,13 @@ oper = ast -> {
                 if (i < lhs "length") {
                     ret
                 } else {
-                    ret + "async(" + compile (lhs i) + ")=>"
+                    ret + "async($" + lhs i 1 + ")=>"
                 }
             }
 
             "(" + more "" 1 + compile (ast (ast "length" - 1)) + ")"
         } else {
-            "(async(" + lhs 1 + ")=>" + rhs + ")"
+            "(async($" + lhs 1 + ")=>" + rhs + ")"
         }
     } else {
         lhs = compile (ast 2)
@@ -158,12 +162,13 @@ compile = ast -> {
     } elseif (ast 0 == node "oper") {
         oper ast
     } elseif (ast 0 == token "ident") {
-        ast 1
+        "$" + ast 1
     } elseif (ast 0 == token "number") {
         ast 1
     } elseif (ast 0 == token "string") {
         tick + ast 1 + tick
     } else {
+        println ast
         error "unknwon ast"
     }
 }

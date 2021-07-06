@@ -1,34 +1,36 @@
-types = require "./token.js"
+types = import "./token.js"
 
 ops = "+-*/%=><:&|!"
 
-keywords = require "./keyword.js"
+keywords = import "./keyword.js"
 
 ready = src -> index -> {
-    char = src index
-    if (char == undefined) {
+    if (index >= src "length") {
         List "empty"
-    } elseif (" " == char) {
-        ready src (index + 1)
-    } elseif (newline == char) {
-        ret = List of (types "newline")
-        List "prepend" ret (ready src (index + 1))
-    } elseif ("({[" "includes" char) {
-        ret = List of (types "open") char
-        List "prepend" ret (ready src (index + 1))
-    } elseif ("]})" "includes" char) {
-        ret = List of (types "close") char
-        List "prepend" ret (ready src (index + 1))
-    } elseif ("0" <= char && char <= "9") {
-        number src index ""
-    } elseif (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")) {
-        ident src index ""
-    } elseif (char == quote) {
-        string src (index + 1) ""
-    } elseif (ops "includes" char) {
-        operator src index ""
     } else {
-        error ("ready char failed " + char)
+        char = src index
+        if (" " == char) {
+            ready src (index + 1)
+        } elseif (newline == char) {
+            ret = List of (types "newline")
+            List "prepend" ret (ready src (index + 1))
+        } elseif ("({[" "includes" char) {
+            ret = List of (types "open") char
+            List "prepend" ret (ready src (index + 1))
+        } elseif ("]})" "includes" char) {
+            ret = List of (types "close") char
+            List "prepend" ret (ready src (index + 1))
+        } elseif ("0" <= char && char <= "9") {
+            number src index ""
+        } elseif (("a" <= char && char <= "z") || ("A" <= char && char <= "Z")) {
+            ident src index ""
+        } elseif (char == quote) {
+            string src (index + 1) ""
+        } elseif (ops "includes" char) {
+            operator src index ""
+        } else {
+            error ("ready char failed " + char)
+        }
     }
 }
 

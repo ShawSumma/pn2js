@@ -1,4 +1,5 @@
 node_modules
-stage1/*.js
-stage1/*/*.js
+pn/*.js
+pn/*/*.js
 test
+.vscode

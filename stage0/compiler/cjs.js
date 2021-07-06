@@ -1,6 +1,8 @@
+const fs = require('fs');
+
 const node = require('../parser/node.js');
 const token = require('../parser/token.js');
-const prelude = require('../../prelude.js');
+const prelude = fs.readFileSync('./prelude.js');
 
 const run = function(ast) {
     if (ast[0] === node.block) {
@@ -104,7 +106,7 @@ const run = function(ast) {
                 ret += ')';
                 return ret;
             } else {
-                return `(async(${lhs[1]})=>${rhs})`;
+                return `(async(${run(lhs)})=>${rhs})`;
             }
         }
         let lhs = run(ast[2]);
@@ -155,7 +157,7 @@ const run = function(ast) {
         throw new Error("unknown operator " + op);
     }
     if (ast[0] === token.ident) {
-        return `${ast[1]}`;
+        return '$' + `${ast[1]}`;
     }
     if (ast[0] === token.number) {
         return `${ast[1]}`;
@@ -167,5 +169,5 @@ const run = function(ast) {
 }
 
 module.exports = function(ast) {
-    return prelude + 'module.exports = (async function(){return(' + run(ast) + ');})()';
+    return prelude + 'module.exports = (async function(){return ' + run(ast) + ';})()';
 };
