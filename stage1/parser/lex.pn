@@ -1,6 +1,6 @@
 types = import "./token.js"
 
-ops = "+-*/%=><:&|!"
+ops = "+-*/%=><:&|!,."
 
 keywords = import "./keyword.js"
 

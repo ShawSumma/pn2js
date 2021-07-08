@@ -1,1 +1,2 @@
-println 20
+x = List of 1 2 3
+x . nth 1 . println

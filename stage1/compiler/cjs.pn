@@ -28,7 +28,7 @@ block = ast -> {
     more (List "empty") 1
 }
 
-of_cons = f -> a -> {
+new_cons = f -> a -> {
     "await pn.cons(" + f + ",[" + a "join" "," + "])"
 }
 
@@ -53,7 +53,7 @@ call = ast -> {
                     }
                 }
                 args = more (i + 1)
-                of_cons ret args
+                new_cons ret args
             } else {
                 next = opcall ret (compile cur)
                 more next (i + 1)
@@ -111,8 +111,10 @@ oper = ast -> {
             "await pn.op2eq("+lhs+","+rhs+")"
         } elseif (op == "!=") {
             "await pn.op2neq("+lhs+","+rhs+")"
+        } elseif (op == ".") {
+            opcall rhs lhs
         } else {
-            error ("unknown op" + op)
+            error ("unknown op " + op)
         }
     }
 }

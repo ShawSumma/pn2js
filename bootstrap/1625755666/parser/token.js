@@ -117,4 +117,4 @@ const pn = {
             return await cls.cons(args);
         }
     },
-};
+};module.exports = (async function(){return(await pn.cons($Enum,[`keyword`,`ident`,`number`,`operator`,`open`,`close`,`string`,`newline`]));})();

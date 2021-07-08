@@ -117,4 +117,4 @@ const pn = {
             return await cls.cons(args);
         }
     },
-};
+};module.exports = (async function(){return(await (async function(){let $fs=await pn.op2call($import,`fs`);let $lex=await pn.op2call($import,`./parser/lex.js`);let $parse=await pn.op2call($import,`./parser/parse.js`);let $cjs=await pn.op2call($import,`./compiler/cjs.js`);let $main=(async($args)=>await (async function(){let $filename=await pn.op2call(await pn.op2call($nth,1),$args);let $src=await pn.op2call($slurp,$filename);let $tokens=await pn.op2call($lex,$src);let $ast=await pn.op2call($parse,$tokens);let $js=await pn.op2call($cjs,$ast);let $outfile=await pn.op2call(await pn.op2call(await pn.op2call($replace,$filename),`.pn`),`.js`);return await pn.op2call(await pn.op2call($dump,$outfile),$js);})());return await pn.op2call($main,$args);})());})();

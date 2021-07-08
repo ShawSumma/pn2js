@@ -34,6 +34,29 @@ const $String = Object.freeze({
         return ret;
     },
 });
+
+const $cons = async(x) => async(y) => {
+    return [x, y];
+};
+
+const $car = async(p) => {
+    return p[0];
+};
+
+const $cdr = async(p) => {
+    return p[1];
+};
+
+const $nth = async(n) => {
+    return async(a) => {
+        return a[n];
+    }
+}
+
+const $replace = async(s) => async(f) => async(t) => {
+    return String(s).replace(f, t);
+};
+
 const $List = Object.freeze({
     empty: Object.freeze([]),
     cons: async(x) => Object.freeze([...x]),
@@ -41,6 +64,7 @@ const $List = Object.freeze({
     append: async(x) => async(e) => Object.freeze([...x, e]),
     concat: async(x) => async(y) => Object.freeze([...x, ...y]),
 });
+
 
 const $Enum = Object.freeze({
     cons: async(x) => {
@@ -77,6 +101,7 @@ const pn = {
         if (x instanceof Function) {
             return await x(y);
         } else {
+            // console.log(`index: ${y}`);
             let ret = x[y];
             if (ret instanceof Function) {
                 return ret.bind(x);
@@ -92,4 +117,4 @@ const pn = {
             return await cls.cons(args);
         }
     },
-};module.exports = (async function(){return($println);})();
+};module.exports = (async function(){return(await pn.cons($Enum,[`block`,`call`,`array`,`oper`,`local`,`value`,`array`]));})();

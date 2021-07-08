@@ -6,12 +6,12 @@ parse = import "./parser/parse.js"
 cjs = import "./compiler/cjs.js"
 
 main = args -> {
-    filename = args 1
+    filename = args . nth 1
     src = slurp filename
     tokens = lex src
     ast = parse tokens
     js = cjs ast
-    outfile = filename "replace" of ".pn" ".js"
+    outfile = replace filename ".pn" ".js"
     dump outfile js
 }
 

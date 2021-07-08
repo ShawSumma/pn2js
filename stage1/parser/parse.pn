@@ -34,6 +34,9 @@ parse_call = stream -> {
                     inner = arg "slice" 1
                     next_arg = if (cur 0 == ")") {
                             parse_opers inner
+                        } elseif (cur 0 == "]") {
+                            ret = parse_opers inner
+                            List of (node "array") ret
                         } else {
                             parse_lines inner
                         }

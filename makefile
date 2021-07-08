@@ -1,20 +1,24 @@
-ROOT=./stage0
-NEXT=./stage1
+ROOT=test
+NEXT=./build/$(shell date +%s)
+NTH=1
+BUILD_LAST:=$(shell cat builds.txt | tail -n $(NTH) | head -n 1)
 
-defualt: stage1
+defualt: full
 
-clean1: .fake
-	rm $(NEXT)/index.js
-	rm $(NEXT)/compiler/cjs.js
-	rm $(NEXT)/parser/keyword.js
-	rm $(NEXT)/parser/lex.js
-	rm $(NEXT)/parser/node.js
-	rm $(NEXT)/parser/op.js
-	rm $(NEXT)/parser/parse.js
-	rm $(NEXT)/parser/prec.js
-	rm $(NEXT)/parser/token.js
+backup: .fake
+	cp -r build ~/.pn2js-tmp
 
-stage1: .fake
+last: .fake
+	rm -rf bootstrap
+	mkdir -p bootstrap
+	cp -r stage1 $(NEXT)
+	$(MAKE) --no-print-directory full ROOT=$(BUILD_LAST)
+	cp -r $(NEXT) bootstrap
+	rm bootstrap/*/*.pn
+	rm bootstrap/*/*/*.pn
+	echo $(NEXT) >> builds.txt
+
+full: test
 	node $(ROOT)/index.js $(NEXT)/index.pn
 	node $(ROOT)/index.js $(NEXT)/compiler/cjs.pn
 	node $(ROOT)/index.js $(NEXT)/parser/keyword.pn
@@ -24,5 +28,8 @@ stage1: .fake
 	node $(ROOT)/index.js $(NEXT)/parser/parse.pn
 	node $(ROOT)/index.js $(NEXT)/parser/prec.pn
 	node $(ROOT)/index.js $(NEXT)/parser/token.pn
+
+test:
+	mkdir test
 
 .fake:

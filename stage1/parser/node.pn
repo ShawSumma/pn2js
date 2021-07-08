@@ -1,1 +1,1 @@
-Enum of "block" "call" "array" "oper" "local" "value"
+Enum of "block" "call" "array" "oper" "local" "value" "array"
