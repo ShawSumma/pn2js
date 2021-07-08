@@ -3,3 +3,4 @@ example/*.js
 .vscode
 build
 builds.txt
+.DS_STORE
